@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: dim_repositories
+    description: "Dimension table for repositories"
+    columns:
+      - name: repository_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_users
+    description: "Dimension table for users"
+    columns:
+      - name: user_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+  - name: fct_daily_stats
+    description: "Daily statistics by language"
+    columns:
+      - name: stat_date
+        description: "Date of the statistics"
+        tests:
+          - not_null

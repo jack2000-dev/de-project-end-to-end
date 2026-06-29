@@ -1,0 +1,37 @@
+version: 2
+
+sources:
+  - name: github_raw
+    database: GITHUB_RAW
+    schema: FIVETRAN
+    tables:
+      - name: repository
+      - name: commit
+      - name: user
+      - name: issue
+      - name: pull_request
+
+models:
+  - name: stg_repositories
+    description: "Cleaned repository data from GitHub"
+    columns:
+      - name: repository_id
+        description: "Unique identifier for the repository"
+        tests:
+          - unique
+          - not_null
+      - name: repository_name
+        description: "Name of the repository"
+        tests:
+          - not_null
+      - name: language
+        description: "Primary programming language"
+
+  - name: stg_users
+    description: "Cleaned user data from GitHub"
+    columns:
+      - name: user_id
+        description: "Unique identifier for the user"
+        tests:
+          - unique
+          - not_null
