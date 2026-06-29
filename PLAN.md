@@ -24,6 +24,15 @@
 
 ![data-architect](img/data-engineer-project-design.png)
 
+## Star schema
+
+### Fact table
+- `fct_repo_activity`: Stores daily counts of commits, PRs, and issues for each repository
+### Dimension table
+- `dim_repositories`: Stores details about each repository e.g., name, language, owner, and description.
+- `dim_users`: Stores user information, e.g., username, name, and profile details.
+- `dim_dates`: Stores date-related details, e.g., the date, month, quarter, and year.
+
 ## Output
 - This project will focus more on the process of data engineer developing a reliable data pipleline and data infrastructure that will serve to DA/DS. 
 - Constraint: $0 cost. This project will rely on free and trial products.
