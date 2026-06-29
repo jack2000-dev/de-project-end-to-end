@@ -1,7 +1,7 @@
 # Phase 1
 - [ ] Build MVP with a contraint of $0 cost
 - [ ] Keep it production-grade
-- [ ] Implement Star schema
+- [x] Implement Star schema
 
 # Phase 2
 
@@ -28,6 +28,7 @@
 
 ### Fact table
 - `fct_repo_activity`: Stores daily counts of commits, PRs, and issues for each repository
+
 ### Dimension table
 - `dim_repositories`: Stores details about each repository e.g., name, language, owner, and description.
 - `dim_users`: Stores user information, e.g., username, name, and profile details.
