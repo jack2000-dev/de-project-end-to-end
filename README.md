@@ -11,6 +11,8 @@ An end-to-end data engineering project to practice and demonstrate data engineer
 3. Transform data using dbt Cloud and implementing Star Schema + Medalion Architecture
 4. Utilize the data via Looker Studio to build dashboard with near-real-time data update
 
+![data-architect](img/data-engineer-project-design.png)
+
 # The Process
 
 
