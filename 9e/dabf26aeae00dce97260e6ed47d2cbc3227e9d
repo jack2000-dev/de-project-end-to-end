@@ -1,0 +1,26 @@
+PLAN.md
+  h_0b5caf7ef38889 44-54,56-65,67-75,77-79,81-83
+NOTE.md
+  s_85da82a40ddc74::t_a5dadd5bc2c6d2 400-636
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "9edabf26aeae00dce97260e6ed47d2cbc3227e9d",
+  "prompts": {},
+  "humans": {
+    "h_0b5caf7ef38889": {
+      "author": "jack2000-dev <jackwforwork@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_85da82a40ddc74": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4b26fde9-6e55-4347-9475-1b4008c38820",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "jack2000-dev <jackwforwork@gmail.com>"
+    }
+  }
+}
