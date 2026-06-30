@@ -10,19 +10,16 @@ cleaned AS (
         -- Attributes
         name AS repository_name,
         full_name,
-        owner_login AS owner_username,
+        owner_id AS owner_username,
         description,
         language,
         
         -- Metrics
-        stargazers_count AS stars,
+        watchers_count AS stars,
         forks_count AS forks,
-        open_issues_count AS open_issues,
         
         -- Dates
-        created_at,
-        updated_at,
-        pushed_at
+        created_at
     FROM source
     WHERE id IS NOT NULL
 )

@@ -7,13 +7,9 @@ cleaned AS (
         id AS user_id,
         login AS username,
         name AS display_name,
-        email,
         company,
         location,
         bio,
-        public_repos AS public_repo_count,
-        followers AS follower_count,
-        following AS following_count,
         created_at,
         updated_at
     FROM source

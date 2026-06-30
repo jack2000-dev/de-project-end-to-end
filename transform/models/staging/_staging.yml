@@ -3,13 +3,14 @@ version: 2
 sources:
   - name: github_raw
     database: GITHUB_RAW
-    schema: FIVETRAN
+    schema: GITHUB
     tables:
       - name: repository
       - name: commit
       - name: user
       - name: issue
       - name: pull_request
+      - name: user_email
 
 models:
   - name: stg_repositories
@@ -32,6 +33,19 @@ models:
     columns:
       - name: user_id
         description: "Unique identifier for the user"
+        tests:
+          - unique
+          - not_null
+  
+  - name: stg_user_emails
+    description: "Cleaned email data from GitHub"
+    columns:
+      - name: user_id
+        description: "Unique identifier for the user"
+        tests:
+          - not_null
+      - name: email
+        description: "Unique email for the user"
         tests:
           - unique
           - not_null

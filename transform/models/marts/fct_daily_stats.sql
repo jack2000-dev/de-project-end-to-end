@@ -4,7 +4,7 @@ WITH repositories AS (
 
 daily_stats AS (
     SELECT
-        DATE_TRUNC('day', updated_at) AS stat_date,
+        DATE_TRUNC('day', created_at) AS stat_date,
         language,
         COUNT(*) AS repo_count,
         SUM(stars) AS total_stars,

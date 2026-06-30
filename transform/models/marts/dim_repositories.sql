@@ -11,8 +11,5 @@ SELECT
     language,
     stars,
     forks,
-    open_issues,
     created_at AS repo_created_at,
-    updated_at AS repo_updated_at,
-    pushed_at AS last_push_at
 FROM repositories
