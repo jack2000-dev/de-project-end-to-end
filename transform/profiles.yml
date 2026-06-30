@@ -1,0 +1,18 @@
+default:
+  outputs:
+    default:
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      auth_type: password
+      client_session_keep_alive: false
+      connect_retries: 3
+      connect_timeout: 30
+      database: GITHUB_STAGING
+      password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+      retry_on_database_errors: true
+      role: "{{ env_var('SNOWFLAKE_ROLE') }}"
+      schema: FIVETRAN
+      threads: 6
+      type: snowflake
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE') }}"
+  target: default

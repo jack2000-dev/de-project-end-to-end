@@ -229,5 +229,5 @@ logs/
 # end dbt Cloud content
 dbt_internal_packages/
 
-# Credentials - never commit
-profiles.yml
+# dbt local files
+.user.yml
