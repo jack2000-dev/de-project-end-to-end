@@ -1,0 +1,22 @@
+transform/models/staging/_staging.yml
+  h_0b5caf7ef38889 6,13,39-48
+transform/models/staging/stg_user_emails.sql
+  h_0b5caf7ef38889 1-13
+transform/models/marts/dim_user_email.sql
+  h_0b5caf7ef38889 1-8
+transform/models/marts/fct_daily_stats.sql
+  h_0b5caf7ef38889 7
+transform/models/staging/stg_repositories.sql
+  h_0b5caf7ef38889 13,18,22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "41f25ae1080498ab9752c022e4d70c1710f794d4",
+  "prompts": {},
+  "humans": {
+    "h_0b5caf7ef38889": {
+      "author": "jack2000-dev <jackwforwork@gmail.com>"
+    }
+  }
+}
