@@ -1,0 +1,14 @@
+transform/macros/generate_schema_name.sql
+  h_0b5caf7ef38889 1-8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "0fd5c0f2f479cc5b83056af61e40cbc06c61340b",
+  "prompts": {},
+  "humans": {
+    "h_0b5caf7ef38889": {
+      "author": "jack2000-dev <jackwforwork@gmail.com>"
+    }
+  }
+}
