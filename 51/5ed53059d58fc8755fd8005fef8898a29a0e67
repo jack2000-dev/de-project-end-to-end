@@ -1,0 +1,24 @@
+transform/models/staging/_staging.yml
+  h_0b5caf7ef38889 52-69
+transform/models/marts/_marts.yml
+  h_0b5caf7ef38889 29-41
+transform/models/staging/stg_commits.sql
+  h_0b5caf7ef38889 1-15
+transform/models/staging/stg_issues.sql
+  h_0b5caf7ef38889 1-19
+transform/models/marts/fct_contributors.sql
+  h_0b5caf7ef38889 1-11
+transform/models/marts/fct_issues.sql
+  h_0b5caf7ef38889 1-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "515ed53059d58fc8755fd8005fef8898a29a0e67",
+  "prompts": {},
+  "humans": {
+    "h_0b5caf7ef38889": {
+      "author": "jack2000-dev <jackwforwork@gmail.com>"
+    }
+  }
+}
