@@ -41,10 +41,46 @@
 - Business questions (BI)
 
 1. Which programming languages are most popular?
+```sql
+SELECT
+    language,
+    COUNT(*)        AS repo_count,
+    SUM(stars)      AS total_stars,
+    ROUND(AVG(stars), 1) AS avg_stars
+FROM GITHUB_ANALYTICS.MARTS.DIM_REPOSITORIES
+WHERE language IS NOT NULL
+GROUP BY language
+ORDER BY repo_count DESC;
+```
 2. Which repository have the most stars?
+```sql
+SELECT
+    full_name,
+    language,
+    stars,
+    forks
+FROM GITHUB_ANALYTICS.MARTS.DIM_REPOSITORIES
+ORDER BY stars DESC
+LIMIT 20;
+```
 3. How fast are repositry growing?
+```sql
+SELECT
+    stat_date,
+    SUM(repo_count) AS repos_created,
+    SUM(SUM(repo_count)) OVER (ORDER BY stat_date) AS cumulative_repos
+FROM GITHUB_ANALYTICS.MARTS.FCT_DAILY_STATS
+GROUP BY stat_date
+ORDER BY stat_date;
+```
 4. Who are the most active contributors?
+```sql
+
+```
 5. How many issues get closed vs stay open?
+```sql
+
+```
 
 
 # Techstack Choices

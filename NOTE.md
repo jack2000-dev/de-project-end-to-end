@@ -397,3 +397,240 @@ Key advantage: if a model's tests fail, dbt build stops bad data from flowing do
 - **dbt test** when you changed only tests, or want to re-check without rebuilding.
 - **dbt build** as the default for any real run, and always in the scheduled dbt Cloud job. It is the production-correct command because it guarantees tested data.
 
+# Analytics Queries
+
+Five business questions and how they map to the marts.
+
+Available marts:
+- DIM_REPOSITORIES: repository_id, repository_name, full_name, owner_username, description, language, stars, forks, repo_created_at
+- DIM_USERS: user_id, username, display_name, company, location, bio, user_created_at
+- FCT_DAILY_STATS: stat_date, language, repo_count, total_stars, total_forks, avg_stars, avg_forks
+
+### 1. Which programming languages are most popular?
+
+```sql
+SELECT
+    language,
+    COUNT(*)        AS repo_count,
+    SUM(stars)      AS total_stars,
+    ROUND(AVG(stars), 1) AS avg_stars
+FROM GITHUB_ANALYTICS.MARTS.DIM_REPOSITORIES
+WHERE language IS NOT NULL
+GROUP BY language
+ORDER BY repo_count DESC;
+```
+
+### 2. Which repositories have the most stars?
+
+```sql
+SELECT
+    full_name,
+    language,
+    stars,
+    forks
+FROM GITHUB_ANALYTICS.MARTS.DIM_REPOSITORIES
+ORDER BY stars DESC
+LIMIT 20;
+```
+
+### 3. How fast are repositories growing?
+
+```sql
+SELECT
+    stat_date,
+    SUM(repo_count) AS repos_created,
+    SUM(SUM(repo_count)) OVER (ORDER BY stat_date) AS cumulative_repos
+FROM GITHUB_ANALYTICS.MARTS.FCT_DAILY_STATS
+GROUP BY stat_date
+ORDER BY stat_date;
+```
+
+repos_created = new repos per day; cumulative_repos = running total (the growth curve). This measures repo creation over time, since created_at is the only date Fivetran gives. There is no historical star snapshot.
+
+### 4. Who are the most active contributors?
+
+Needs a commits model (see next section). Until then, a proxy from existing marts is who owns the most repositories:
+
+```sql
+SELECT
+    u.username,
+    u.display_name,
+    u.company,
+    COUNT(r.repository_id) AS repos_owned,
+    SUM(r.stars)           AS total_stars_earned
+FROM GITHUB_ANALYTICS.MARTS.DIM_REPOSITORIES r
+JOIN GITHUB_ANALYTICS.MARTS.DIM_USERS u
+    ON r.owner_username = u.user_id      -- owner_username actually holds owner_id
+GROUP BY u.username, u.display_name, u.company
+ORDER BY repos_owned DESC
+LIMIT 20;
+```
+
+### 5. How many issues are closed vs open?
+
+Needs an issues model (see next section). There is no issues mart yet; issue exists only as a raw source.
+
+Lesson: the current marts cover repos and users well, but not commits or issues. Some questions expose gaps in the model layer, not the SQL.
+
+# Modeling Commits and Issues
+
+Goal: build stg_commits, stg_issues and matching marts so questions 4 and 5 read cleanly from GITHUB_ANALYTICS.MARTS.
+
+### Step 0: Verify the real columns first (always)
+
+```sql
+DESCRIBE TABLE GITHUB_RAW.GITHUB.ISSUE;
+DESCRIBE TABLE GITHUB_RAW.GITHUB.COMMIT;
+```
+
+Same trap as before: do not assume column names. COMMIT is the least predictable because git commits store an author name/email, not always a GitHub user_id. Adjust the models to what you actually see.
+
+Likely columns:
+- ISSUE: id, number, state, title, user_id, repository_id, created_at, closed_at
+- COMMIT: sha, author_name, author_login (maybe), repository_id, author_date or committed_at
+
+### Step 1: Staging models (transform/models/staging/)
+
+stg_issues.sql:
+
+```sql
+WITH source AS (
+    SELECT * FROM {{ source('github_raw', 'issue') }}
+),
+
+cleaned AS (
+    SELECT
+        id            AS issue_id,
+        number        AS issue_number,
+        state         AS issue_state,      -- 'open' / 'closed'
+        title,
+        user_id,
+        repository_id,
+        created_at,
+        closed_at
+    FROM source
+    WHERE id IS NOT NULL
+)
+
+SELECT * FROM cleaned
+```
+
+stg_commits.sql (adjust to DESCRIBE output):
+
+```sql
+WITH source AS (
+    SELECT * FROM {{ source('github_raw', 'commit') }}
+),
+
+cleaned AS (
+    SELECT
+        sha            AS commit_sha,
+        author_name,                       -- or author_login if it exists
+        repository_id,
+        author_date    AS committed_at     -- whatever the real date column is
+    FROM source
+    WHERE sha IS NOT NULL
+)
+
+SELECT * FROM cleaned
+```
+
+commit and issue are already in _staging.yml sources, so only the models are new.
+
+### Step 2: Register models + tests in _staging.yml
+
+```yaml
+  - name: stg_issues
+    description: "Cleaned GitHub issues"
+    columns:
+      - name: issue_id
+        tests:
+          - unique
+          - not_null
+      - name: issue_state
+        tests:
+          - accepted_values:
+              values: ['open', 'closed']
+
+  - name: stg_commits
+    description: "Cleaned GitHub commits"
+    columns:
+      - name: commit_sha
+        tests:
+          - unique
+          - not_null
+```
+
+New test: accepted_values fails if issue_state ever holds anything other than open or closed. A data-quality guard before dashboarding.
+
+### Step 3: Marts (transform/models/marts/)
+
+fct_issues.sql (answers Q5):
+
+```sql
+WITH issues AS (
+    SELECT * FROM {{ ref('stg_issues') }}
+)
+
+SELECT
+    repository_id,
+    COUNT(*)                                                   AS total_issues,
+    COUNT_IF(issue_state = 'open')                             AS open_issues,
+    COUNT_IF(issue_state = 'closed')                           AS closed_issues,
+    ROUND(COUNT_IF(issue_state = 'closed') / COUNT(*) * 100, 1) AS closed_pct
+FROM issues
+GROUP BY repository_id
+```
+
+COUNT_IF is a Snowflake shortcut for counting rows where a condition is true, cleaner than SUM(CASE WHEN ... THEN 1 END).
+
+fct_contributors.sql (answers Q4):
+
+```sql
+WITH commits AS (
+    SELECT * FROM {{ ref('stg_commits') }}
+)
+
+SELECT
+    author_name,
+    COUNT(*)                       AS commit_count,
+    COUNT(DISTINCT repository_id)  AS repos_contributed_to
+FROM commits
+WHERE author_name IS NOT NULL
+GROUP BY author_name
+```
+
+Register both in _marts.yml with at least a description.
+
+### Step 4: Build and verify
+
+```bash
+cd transform
+dbt build --select stg_issues stg_commits fct_issues fct_contributors
+```
+
+--select builds just these four (plus their tests) instead of the whole project.
+
+### Step 5: The two questions, now clean from marts
+
+Q5, issues closed vs open (account-wide):
+
+```sql
+SELECT
+    SUM(open_issues)   AS open_issues,
+    SUM(closed_issues) AS closed_issues,
+    ROUND(SUM(closed_issues) / SUM(total_issues) * 100, 1) AS closed_pct
+FROM GITHUB_ANALYTICS.MARTS.FCT_ISSUES;
+```
+
+Q4, most active contributors:
+
+```sql
+SELECT
+    author_name,
+    commit_count,
+    repos_contributed_to
+FROM GITHUB_ANALYTICS.MARTS.FCT_CONTRIBUTORS
+ORDER BY commit_count DESC
+LIMIT 20;
+```
