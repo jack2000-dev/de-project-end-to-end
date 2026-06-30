@@ -49,3 +49,24 @@ models:
         tests:
           - unique
           - not_null
+    
+  - name: stg_issues
+    description: "Cleaned issue data from GitHub"
+    columns:
+      - name: issue_id
+        tests:
+          - unique
+          - not_null
+      - name: issue_state
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['open', 'closed']
+  
+  - name: stg_commits
+    description: "Cleaned commits data from GitHub"
+    columns:
+      - name: commit_sha
+        tests:
+          - unique
+          - not_null

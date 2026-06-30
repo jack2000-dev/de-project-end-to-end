@@ -26,3 +26,18 @@ models:
         description: "Date of the statistics"
         tests:
           - not_null
+    
+  - name: fct_issues
+    description: "Issues statistics"
+    columns:
+      - name: repository_id
+        description: "Primary key"
+        tests:
+          - unique
+
+  - name: fct_contributors
+    description: "Contributed statistics"
+    columns:
+      - name: author_name
+        tests:
+          - not_null
