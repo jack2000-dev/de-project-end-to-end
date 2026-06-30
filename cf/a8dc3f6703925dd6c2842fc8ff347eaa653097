@@ -1,0 +1,28 @@
+.env.example
+  h_0b5caf7ef38889 1-5
+.gitignore
+  s_85da82a40ddc74::t_592cda40e7d05d 232-233
+transform/profiles.yml
+  h_0b5caf7ef38889 1-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "cfa8dc3f6703925dd6c2842fc8ff347eaa653097",
+  "prompts": {},
+  "humans": {
+    "h_0b5caf7ef38889": {
+      "author": "jack2000-dev <jackwforwork@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_85da82a40ddc74": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4b26fde9-6e55-4347-9475-1b4008c38820",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "jack2000-dev <jackwforwork@gmail.com>"
+    }
+  }
+}
