@@ -1,0 +1,26 @@
+NOTE.md
+  s_85da82a40ddc74::t_a9a57b55ac71de 328-399
+  s_85da82a40ddc74::t_08913719105e90 1-324
+  h_0b5caf7ef38889 325-327
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "e8c09b528c6e7166e84ace8c624b01317a359a8e",
+  "prompts": {},
+  "humans": {
+    "h_0b5caf7ef38889": {
+      "author": "jack2000-dev <jackwforwork@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_85da82a40ddc74": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4b26fde9-6e55-4347-9475-1b4008c38820",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "jack2000-dev <jackwforwork@gmail.com>"
+    }
+  }
+}
