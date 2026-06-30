@@ -1,0 +1,14 @@
+transform/dbt_project.yml
+  h_0b5caf7ef38889 17,21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "7c06e5245c725a60d2a94fc5a2967dc60ad83969",
+  "prompts": {},
+  "humans": {
+    "h_0b5caf7ef38889": {
+      "author": "jack2000-dev <jackwforwork@gmail.com>"
+    }
+  }
+}
