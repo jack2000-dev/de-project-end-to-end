@@ -1,0 +1,16 @@
+snowflake/db_structure.sql
+  h_0b5caf7ef38889 7
+snowflake/permisson.sql
+  h_0b5caf7ef38889 10-11,26-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "370b422c70e1510b9a23ad269e3d14a2d383bae4",
+  "prompts": {},
+  "humans": {
+    "h_0b5caf7ef38889": {
+      "author": "jack2000-dev <jackwforwork@gmail.com>"
+    }
+  }
+}
