@@ -75,11 +75,21 @@ ORDER BY stat_date;
 ```
 4. Who are the most active contributors?
 ```sql
-
+SELECT
+    author_name,
+    commit_count,
+    repos_contributed_to
+FROM GITHUB_ANALYTICS.MARTS.FCT_CONTRIBUTORS
+ORDER BY commit_count DESC
+LIMIT 20;
 ```
 5. How many issues get closed vs stay open?
 ```sql
-
+SELECT
+    SUM(open_issues)   AS open_issues,
+    SUM(closed_issues) AS closed_issues,
+    ROUND(SUM(closed_issues) / SUM(total_issues) * 100, 1) AS closed_pct
+FROM GITHUB_ANALYTICS.MARTS.FCT_ISSUES;
 ```
 
 

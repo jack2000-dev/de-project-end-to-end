@@ -634,3 +634,95 @@ FROM GITHUB_ANALYTICS.MARTS.FCT_CONTRIBUTORS
 ORDER BY commit_count DESC
 LIMIT 20;
 ```
+
+# The Thinking Behind the Code
+
+The why behind every modeling decision, so the choices are repeatable on the next project.
+
+## How to decide which tests to write (_staging.yml)
+
+### The four built-in generic tests
+
+dbt ships with exactly four generic tests out of the box:
+
+| Test | Fails when | Use it on |
+|---|---|---|
+| not_null | any NULL exists in the column | every key, plus any column a dashboard depends on |
+| unique | a value repeats | the column that defines the table grain (one row per X) |
+| accepted_values | a value is outside an allowed list | low-cardinality category/status columns |
+| relationships | a value has no match in a parent table | foreign keys (referential integrity) |
+
+Beyond these four, you have two more sources of tests:
+- **Singular tests**: a hand-written .sql file in tests/ that returns the bad rows. Use for one-off business rules (for example "closed_at must be after created_at").
+- **Package tests**: install dbt_utils or dbt_expectations for dozens more (accepted_range, expression_is_true, not_null_proportion, etc.).
+
+### The decision process for a column
+
+Ask these questions in order:
+
+1. **Is it the primary key / grain of the table?** -> add unique + not_null. Example: issue_id in stg_issues, email in stg_user_emails.
+2. **Is it a key that other models join on, but rows can repeat?** -> not_null only, not unique. Example: user_id in stg_user_emails (one user has many emails, so it repeats).
+3. **Is it a foreign key into another table?** -> relationships (and usually not_null). Example: repository_id pointing at stg_repositories.
+4. **Is it a status/category with a known fixed set of values?** -> accepted_values. Example: issue_state in ['open', 'closed'].
+5. **Will a dashboard break or mislead if it is NULL?** -> not_null. Example: a metric column you SUM.
+6. **None of the above?** -> usually no test. Do not test descriptive free-text columns like bio or description. Testing everything adds noise and slows runs.
+
+### Why grain decides the unique test
+
+The single most common mistake (and one we hit): putting unique on the wrong column. Always state the grain in one sentence first.
+- stg_repositories grain = one row per repository -> unique on repository_id.
+- stg_user_emails grain = one row per email -> unique on email, NOT user_id.
+
+If the sentence has "per X", X is your unique column.
+
+## The thinking behind the SQL models
+
+### The CTE pattern: source -> cleaned -> final
+
+Every staging model follows the same shape on purpose:
+
+```sql
+WITH source AS (
+    SELECT * FROM {{ source(...) }}   -- 1. pull raw, untouched
+),
+cleaned AS (
+    SELECT ...                         -- 2. rename, cast, filter
+    FROM source
+    WHERE ...
+)
+SELECT * FROM cleaned                  -- 3. expose the result
+```
+
+Why split it up: the source CTE isolates the one place the raw table is named (easy to repoint), the cleaned CTE holds all the logic, and the final SELECT makes the output obvious. Readable and debuggable.
+
+### Which table to pull from
+
+- Staging models read from **sources** via `{{ source('github_raw', 'x') }}`. One staging model per raw table. Never reference GITHUB_RAW directly by name; the source() function makes dependencies visible to dbt and centralizes the table location.
+- Marts read from **other models** via `{{ ref('stg_x') }}`. Never reference raw sources from a mart; always build on staging. ref() is what lets dbt order the DAG and lets dbt build skip downstream models when an upstream test fails.
+
+Rule of thumb: source() at the staging layer only, ref() everywhere above it.
+
+### Why rename and alias columns
+
+Renaming in staging is deliberate, not cosmetic:
+- **Consistency**: raw GitHub gives id, login, name. We alias to user_id, username, display_name so every downstream model speaks the same vocabulary. id is ambiguous across tables; user_id is not.
+- **Hide source quirks**: watchers_count AS stars and forks_count AS forks present a clean business name even though Fivetran used a different one. If the source column ever changes, you fix it in one staging model and nothing downstream notices.
+- **Reserved words**: aliasing also dodges keyword collisions (the "following" problem).
+
+Staging is the translation layer: raw vendor names in, clean business names out.
+
+### Which columns get WHERE ... IS NOT NULL, and why
+
+The filter `WHERE id IS NOT NULL` appears in staging for one specific reason: **drop rows with no primary key.** A row with a NULL id is unusable, cannot be joined, and would fail the not_null test anyway. Filtering it here keeps junk out of the warehouse and keeps the test green.
+
+Decision rule:
+- **Filter the primary key for NULL** (WHERE id IS NOT NULL) -> always, in staging. This is row-level garbage removal.
+- **Do not filter other columns for NULL by default.** A repo with a NULL language is still a valid repo; dropping it would hide data. Instead, filter NULLs only at the point of use, for example WHERE language IS NOT NULL inside fct_daily_stats because grouping by NULL language is meaningless for that one metric.
+
+The distinction: filter the key everywhere (data integrity); filter attributes only where a specific query needs it (analysis choice).
+
+### Why staging is views and marts are tables
+
+In dbt_project.yml: staging is +materialized: view, marts is +materialized: table.
+- Views are cheap and always reflect the latest source, good for the thin cleaning layer.
+- Marts are queried by dashboards repeatedly, so materializing them as tables makes Looker Studio fast. You trade storage and build time for query speed where it counts.
