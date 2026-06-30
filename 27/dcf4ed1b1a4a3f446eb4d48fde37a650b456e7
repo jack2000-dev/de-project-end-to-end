@@ -1,0 +1,25 @@
+.gitignore
+  s_85da82a40ddc74::t_af4646d916a744 223
+  h_0b5caf7ef38889 231-233
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "27dcf4ed1b1a4a3f446eb4d48fde37a650b456e7",
+  "prompts": {},
+  "humans": {
+    "h_0b5caf7ef38889": {
+      "author": "jack2000-dev <jackwforwork@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_85da82a40ddc74": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4b26fde9-6e55-4347-9475-1b4008c38820",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "jack2000-dev <jackwforwork@gmail.com>"
+    }
+  }
+}
