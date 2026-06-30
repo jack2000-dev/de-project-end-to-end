@@ -14,8 +14,10 @@ clean-targets:
 models:
   de-project-end-to-end:
     staging:
+      +database: GITHUB_STAGING
       +schema: staging
       +materialized: view
     marts:
+      +database: GITHUB_ANALYTICS
       +schema: marts
       +materialized: table
