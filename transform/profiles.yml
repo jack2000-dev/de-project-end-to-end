@@ -10,9 +10,9 @@ default:
       password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
       retry_on_database_errors: true
       role: "{{ env_var('SNOWFLAKE_ROLE') }}"
-      schema: FIVETRAN
+      schema: FIVETRAN #Check macros/schema.sql for the schema
       threads: 6
-      type: snowflake
+      type: snowflake 
       user: "{{ env_var('SNOWFLAKE_USER') }}"
       warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE') }}"
   target: default
