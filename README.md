@@ -1,8 +1,9 @@
 # Github Analytics
 An end-to-end data engineering project to practice and demonstrate data engineering skills.
 
->[!NOTE] 
->This project is still work in progress and everything will slowly building up according to the PLAN.md(which I planed to moved into Projects section of Github)
+> [!NOTE] 
+> This project is still work in progress and everything will slowly building up according to the PLAN.md
+> The data is Extract, Load, and Transform (ELT) daily until the free trial ends.
 
 # How it works
 
