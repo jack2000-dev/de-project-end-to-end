@@ -1,6 +1,6 @@
 # Phase 1
-- [ ] Build MVP with a contraint of $0 cost
-- [ ] Keep it production-grade
+- [x] Build MVP with a contraint of $0 cost
+- [x] Keep it production-grade
 - [x] Implement Star schema
 
 # Phase 2
@@ -52,16 +52,16 @@ WHERE language IS NOT NULL
 GROUP BY language
 ORDER BY repo_count DESC;
 ```
-2. Which repository have the most stars?
+2. What is the count of commit over time?
 ```sql
 SELECT
-    full_name,
-    language,
-    stars,
-    forks
-FROM GITHUB_ANALYTICS.MARTS.DIM_REPOSITORIES
-ORDER BY stars DESC
-LIMIT 20;
+    author_name,
+    DATE_TRUNC('day', committed_at) AS commit_date,
+    COUNT(*) AS commit_count,
+    COUNT(DISTINCT repository_id) AS repos_contributed_to
+FROM GITHUB_ANALYTICS.MARTS.FCT_CONTRIBUTORS
+WHERE author_name IS NOT NULL
+GROUP BY author_name, commit_date
 ```
 3. How fast are repositry growing?
 ```sql
