@@ -4,8 +4,9 @@ WITH commits AS (
 
 SELECT
     author_name,
+    DATE_TRUNC('day', committed_at) AS commit_date,
     COUNT(*) AS commit_count,
     COUNT(DISTINCT repository_id) AS repos_contributed_to
 FROM commits
 WHERE author_name IS NOT NULL
-GROUP BY author_name
+GROUP BY author_name, commit_date

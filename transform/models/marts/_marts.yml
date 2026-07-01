@@ -26,7 +26,7 @@ models:
         description: "Date of the statistics"
         tests:
           - not_null
-    
+
   - name: fct_issues
     description: "Issues statistics"
     columns:
