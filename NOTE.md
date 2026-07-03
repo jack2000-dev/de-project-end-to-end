@@ -726,3 +726,131 @@ The distinction: filter the key everywhere (data integrity); filter attributes o
 In dbt_project.yml: staging is +materialized: view, marts is +materialized: table.
 - Views are cheap and always reflect the latest source, good for the thin cleaning layer.
 - Marts are queried by dashboards repeatedly, so materializing them as tables makes Looker Studio fast. You trade storage and build time for query speed where it counts.
+
+---
+
+## 19. Looker Studio does not auto-discover new Snowflake tables
+
+**Problem:** Built new marts (fct_contributors, fct_issues) with `dbt build` and they appeared in Snowflake, but the Looker Studio dashboard did not show the new data.
+
+**Cause:** Looker Studio refreshes data within existing data sources automatically, but it never scans Snowflake for new tables. Each table is a separate data source that must be added manually.
+
+**Solution:** In the existing report: Edit > Resource > Manage added data sources > Add a data source > select Snowflake connector > pick the new table. Repeat for each new table.
+
+**Lesson:** New table in Snowflake = add it once as a new data source in Looker Studio. After that, it stays live and refreshes automatically.
+
+---
+
+## 20. GROUP BY: every non-aggregated column must be listed
+
+**Problem:** Added `committed_at` to a SELECT that had `COUNT(*)` and `GROUP BY author_name`. Snowflake error: `'COMMITS.COMMITTED_AT' in select clause is neither an aggregate nor in the group by clause.`
+
+**Cause:** SQL rule: when using aggregate functions (COUNT, SUM, AVG, etc.), every column in SELECT that is NOT an aggregate must appear in GROUP BY. `committed_at` was a raw column, not wrapped in an aggregate, and not in GROUP BY.
+
+**Solutions (depending on intent):**
+- Want the raw date as a grouping dimension? Add it to GROUP BY: `GROUP BY author_name, commit_date`. This changes the grain from "one row per author" to "one row per author per day".
+- Want date info without changing the grain? Use an aggregate: `MIN(committed_at) AS first_commit_at, MAX(committed_at) AS last_commit_at`.
+
+**Lesson:** Before adding a column to SELECT, ask: "is this an aggregate or a dimension?" If it is a dimension, it must go in GROUP BY and it will change the grain of the table.
+
+---
+
+## 21. Different grains need different models
+
+**Problem:** Wanted one table to serve both a contributor leaderboard AND a commits-over-time chart. Tried to add a date column to fct_contributors, but that changed the grain from "one row per author" to "one row per author per day", making the leaderboard numbers wrong.
+
+**Key concept:** The grain of a table is "what does one row represent?" Tables with different grains answer different questions:
+
+| Model | Grain | Dashboard use |
+|---|---|---|
+| fct_contributors | One row per author | Leaderboard / bar chart |
+| fct_commit_activity | One row per day | Time-series line chart |
+
+**Solution (two approaches):**
+1. **Separate models** (textbook correct): keep each model at one clean grain. More models, but each is simple and reusable.
+2. **Combined model** (pragmatic): group by author + date. Works fine for small projects but some metrics become less intuitive (repos_contributed_to per day vs total).
+
+**Lesson:** For small projects, combining is fine. At scale, separate models per grain keeps things clean. Always state the grain in one sentence before building: "this table has one row per ___."
+
+---
+
+## 22. direnv allow on an empty .envrc does nothing
+
+**Problem:** Ran `direnv allow` and then `dbt build`, but still got `env_var SNOWFLAKE_ACCOUNT not found`.
+
+**Cause:** The `.envrc` file in `transform/` was empty (0 bytes). `direnv allow` approved a blank file, so no variables were exported.
+
+**Solution:** Add `dotenv ../.env` to the `.envrc` file. This tells direnv to load the `.env` file from the project root (one directory up) and export all its variables.
+
+```bash
+# transform/.envrc
+dotenv ../.env
+```
+
+**Lesson:** `direnv` reads `.envrc`, not `.env`. The `.envrc` must contain an instruction like `dotenv` to load the env file. An empty `.envrc` is silently useless.
+
+---
+
+## 23. dbt model name typo gives a confusing warning
+
+**Problem:** Ran `dbt build --select fact_issues` and got a warning instead of an error: `The selection criterion 'fqn:fact_issues' does not match any enabled nodes`.
+
+**Cause:** The model file is `fct_issues.sql`, not `fact_issues.sql`. dbt does not error out when the selector matches nothing; it just warns and exits with zero work done.
+
+**Lesson:** If dbt says "Nothing to do" or "does not match any enabled nodes", check for typos in the model name. The model name comes from the filename, not the YAML description.
+
+---
+
+## 24. Fivetran syncs ALL commits from forked repos
+
+**Problem:** Dashboard showed commits from people who are not the repo owner. The contributor data was a mix of the owner's commits and other people's.
+
+**Cause:** When you fork a repository, the fork carries the entire git history of the original repo. Fivetran syncs all commits from every repo you own, including forks. So forking `facebook/react` would pull thousands of commits by Facebook engineers.
+
+**Solution options:**
+- Filter by author name: `WHERE author_name = 'your_name'`
+- Filter out forked repos by joining with the repository table (if a `fork` boolean column exists in the raw data)
+- Keep it as-is: showing all contributors to your repos is valid data
+
+**Lesson:** Understand what the ingestion tool actually pulls. Fivetran's GitHub connector syncs every commit in every repo linked to your account, regardless of who authored it.
+
+---
+
+## 25. dbt Cloud credentials: profile vs deployment environment
+
+**Problem:** Confused by two separate credential screens in dbt Cloud. One at `/settings/profile/credentials/` and another when creating a deployment environment.
+
+**Key concept:** dbt Cloud has two types of credentials for two different purposes:
+
+| | Profile Credentials | Deployment Environment |
+|---|---|---|
+| Used when | You use the Cloud IDE (web editor) to develop | A scheduled job runs automatically |
+| Triggered by | You, manually | The scheduler |
+| Think of it as | Your dev laptop in the cloud | The production server |
+
+In a team, each developer has their own profile credentials (writing to their own dev schema), while the deployment environment uses shared credentials writing to production. For a solo project, the values are the same.
+
+**Also important:** dbt Cloud ignores profiles.yml entirely. It generates the profile from the UI settings. profiles.yml and .env are for local CLI only.
+
+---
+
+## 26. The schema field in dbt Cloud is just a fallback
+
+**Problem:** Unsure what schema to put in dbt Cloud credentials. Should it match profiles.yml? Match the actual Snowflake schema?
+
+**Cause:** Confusion between the connection-level default schema and the model-level schema overrides.
+
+**How it works:**
+```
+dbt Cloud schema field: FIVETRAN    <-- default fallback (rarely used)
+                                         overridden by dbt_project.yml:
+  staging:  +schema: staging        <-- staging models go here
+  marts:    +schema: marts          <-- marts models go here
+```
+
+The custom `generate_schema_name` macro makes overrides work verbatim. So the schema in the connection (FIVETRAN) is only used for models that do not have an explicit `+schema` in dbt_project.yml.
+
+**Solution:** Use `FIVETRAN` to match the local profiles.yml. Since all models already have `+schema` overrides, this value is never actually used.
+
+**Lesson:** The schema in profiles.yml / dbt Cloud credentials is a fallback default. The real routing happens in dbt_project.yml with `+schema` and `+database`.
+
