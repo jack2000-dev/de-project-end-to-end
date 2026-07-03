@@ -6,7 +6,7 @@
 # Phase 2
 
 - [ ] Add Data Quality Tests (dbt)
-- [ ] Add Documentation
+- [x] Add Documentation
 - [ ] Implement SCD Type 2
 - [ ] ADD CI/CD (Github Actions)
 - [ ] Add IaC (Terraform)
