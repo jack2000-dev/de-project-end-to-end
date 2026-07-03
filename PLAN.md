@@ -124,3 +124,6 @@ FROM GITHUB_ANALYTICS.MARTS.FCT_ISSUES;
 
 # Reference
 - [Your First Data Engineering Project: Build an End-to-End Solution for Free with best tools by Dmitry Anoshin](https://blog.surfalytics.com/p/your-first-data-engineering-project)
+
+# Disclaimer
+If you want to follow the reference guide, please be aware that the guide might contain incorrect information at some part. For example, the extracted data and the column name are not matching. Therefore, follow the guide with caution and prepare to debug and solve unexpected problem. (Which is great anyways for practical learning experience!)
