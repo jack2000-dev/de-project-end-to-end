@@ -1,0 +1,14 @@
+PLAN.md
+  h_0b5caf7ef38889 15,99,102
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "14de98279f993a0114d0ad03e8d909e55e628158",
+  "prompts": {},
+  "humans": {
+    "h_0b5caf7ef38889": {
+      "author": "jack2000-dev <jackwforwork@gmail.com>"
+    }
+  }
+}
