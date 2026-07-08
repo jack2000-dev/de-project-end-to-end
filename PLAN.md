@@ -11,7 +11,8 @@
 - [ ] ADD CI/CD (Github Actions)
 - [ ] Add IaC (Terraform)
 - [ ] Add Orchestration (Airflow)
-- [ ] Monitoring Costs (Grafana)
+- [ ] Monitoring (Grafana)
+- [ ] Replace Fivetran with [Clickhouse](https://clickhouse.com/use-cases/real-time-analytics)?
 - [ ] Add more data sources
 
 # Data Architect
@@ -95,9 +96,10 @@ FROM GITHUB_ANALYTICS.MARTS.FCT_ISSUES;
 
 # Techstack Choices
 
-## Data source
+## Ingestion (Data source + Streaming)
 - Kafka (Redpanda)
 - Pyflink
+- [Clickhouse](https://clickhouse.com/use-cases/real-time-analytics)
 
 ## Cloud
 - GCP/GCS
