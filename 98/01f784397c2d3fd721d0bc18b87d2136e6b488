@@ -1,0 +1,12 @@
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "9801f784397c2d3fd721d0bc18b87d2136e6b488",
+  "prompts": {},
+  "humans": {
+    "h_0b5caf7ef38889": {
+      "author": "jack2000-dev <jackwforwork@gmail.com>"
+    }
+  }
+}
