@@ -1,0 +1,14 @@
+infra/gcp/gcp_db_structure.sql
+  h_0b5caf7ef38889 1-8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.11",
+  "base_commit_sha": "d71f15b357f37f81633e814ef33cfd5c223020df",
+  "prompts": {},
+  "humans": {
+    "h_0b5caf7ef38889": {
+      "author": "jack2000-dev <jackwforwork@gmail.com>"
+    }
+  }
+}
