@@ -1,0 +1,14 @@
+.gitignore
+  h_0b5caf7ef38889 162
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.11",
+  "base_commit_sha": "67cc01b430b0eaeb52fb63950db265c3ea1417fd",
+  "prompts": {},
+  "humans": {
+    "h_0b5caf7ef38889": {
+      "author": "jack2000-dev <jackwforwork@gmail.com>"
+    }
+  }
+}
