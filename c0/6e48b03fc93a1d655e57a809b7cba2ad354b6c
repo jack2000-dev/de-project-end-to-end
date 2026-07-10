@@ -1,0 +1,14 @@
+infra/gcp/README.md
+  h_0b5caf7ef38889 1-9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.11",
+  "base_commit_sha": "c06e48b03fc93a1d655e57a809b7cba2ad354b6c",
+  "prompts": {},
+  "humans": {
+    "h_0b5caf7ef38889": {
+      "author": "jack2000-dev <jackwforwork@gmail.com>"
+    }
+  }
+}
