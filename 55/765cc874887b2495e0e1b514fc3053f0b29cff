@@ -1,0 +1,24 @@
+infra/gcp/README.md
+  s_3c8e69a23fe1eb::t_3eda8f75e04f17 10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "55765cc874887b2495e0e1b514fc3053f0b29cff",
+  "prompts": {},
+  "humans": {
+    "h_0b5caf7ef38889": {
+      "author": "jack2000-dev <jackwforwork@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_3c8e69a23fe1eb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06cda0c5-6b84-47b2-9d65-129ef1d346d8",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "jack2000-dev <jackwforwork@gmail.com>"
+    }
+  }
+}
