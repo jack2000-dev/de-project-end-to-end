@@ -2,8 +2,7 @@ version: 2
 
 sources:
   - name: github_raw
-    database: GITHUB_RAW
-    schema: GITHUB
+    schema: GITHUB_RAW
     tables:
       - name: repository
       - name: commit
