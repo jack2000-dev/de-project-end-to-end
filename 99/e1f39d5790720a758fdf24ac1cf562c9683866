@@ -1,0 +1,33 @@
+transform/models/staging/_staging.yml
+  h_0b5caf7ef38889 5
+transform/profiles.yml
+  h_0b5caf7ef38889 4-8
+.env.example
+  h_0b5caf7ef38889 1,7-9
+transform/dbt_project.yml
+  h_0b5caf7ef38889 17,20
+infra/gcp/README.md
+  s_3c8e69a23fe1eb::t_a283580ec65345 1-3,7,12,19,24,29,34
+  s_3c8e69a23fe1eb::t_e70498870f8f71 13-18,20-23,25-28,30-33,35-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "99e1f39d5790720a758fdf24ac1cf562c9683866",
+  "prompts": {},
+  "humans": {
+    "h_0b5caf7ef38889": {
+      "author": "jack2000-dev <jackwforwork@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_3c8e69a23fe1eb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06cda0c5-6b84-47b2-9d65-129ef1d346d8",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "jack2000-dev <jackwforwork@gmail.com>"
+    }
+  }
+}
