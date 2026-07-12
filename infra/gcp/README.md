@@ -7,6 +7,7 @@
 ## Create service account and grant permissions
 
 - BigQuery Data Editor + BigQuery Job User
+- BigQuery Read Session User, needed separately for the Storage API to stream query results back. Data Editor and Job User do not include `bigquery.readsessions.create`, so without this role `dbt debug` fails with a misleading `AuthenticationFailed` error whose real message is `Storage API is not available for query`
 - Add the `.json` key files in `.gitignore`
 
 ## Configure dbt profile (transform/profiles.yml)
